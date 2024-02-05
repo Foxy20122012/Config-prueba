@@ -1,0 +1,13 @@
+{
+  "constants": {
+    "plataforma": "web",
+    "publicPath": "/project",
+    "urlWebApi": "https://apisuite.azurewebsites.net/api/data/",
+    "urlUploadApi":"https://apisuite.azurewebsites.net/api/data/",
+    "appTitle": "Project",
+    "idApp": "project",
+    "publicKey":"",
+    "maxMbUpload": 4,
+    "defaultLocale": "es"
+  }
+}

@@ -9,13 +9,41 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.1.0"
+    "@headlessui/react": "1.7.3",
+    "@heroicons/react": "2.0.12",
+    "@react-pdf-viewer/core": "3.8.0",
+    "@tailwindcss/forms": "0.5.3",
+    "@tailwindcss/line-clamp": "0.4.2",
+    "alasql": "2.5.1",
+    "base64-to-uint8array": "1.0.0",
+    "config": "3.3.8",
+    "eslint": "8.26.0",
+    "eslint-config-next": "13.0.0",
+    "js-cookie": "3.0.1",
+    "js-md5": "0.7.3",
+    "jspdf": "2.5.1",
+    "jspdf-autotable": "3.5.25",
+    "nanoid": "4.0.0",
+    "next": "14.0.4",
+    "pdfjs-dist": "2.8.335",
+    "pristinejs": "0.1.9",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-dropzone-component": "3.2.0",
+    "react-multi-email": "0.5.3",
+    "react-pivottable": "0.11.0",
+    "react-select": "5.5.7",
+    "react-toastify": "9.0.8",
+    "rosetta": "1.1.0",
+    "underscore": "1.13.6",
+    "v-functions": "git+https://2bdcc0300e0ed5ac01f9dcd51368f7ac74fdb85a@git.via-asesores.com/libraries/v-functions.git",
+    "vComponents": "git+https://2bdcc0300e0ed5ac01f9dcd51368f7ac74fdb85a@git.via-asesores.com/libraries/v-components.git",
+    "viewerjs": "1.11.1",
+    "xlsx": "0.18.5"
   },
   "devDependencies": {
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8",
+    "autoprefixer": "10.4.12",
+    "postcss": "8.4.18",
     "tailwindcss": "^3.3.0"
   }
 }
