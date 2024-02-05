@@ -27,6 +27,7 @@
     "next": "14.0.4",
     "pdfjs-dist": "2.8.335",
     "pristinejs": "0.1.9",
+    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone-component": "3.2.0",
