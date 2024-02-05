@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import presets from "@/utils/globalPresets";
 import fetchedHeaders from "../../models/encabezadoModel";
-import Modals from "@/components/Modals";
+
 import SuccessModal from "../../components/SuccessModal";
 
 const DataTable = dynamic(() => import("vComponents/dist/DataTable"), {
@@ -261,21 +261,26 @@ const Page = () => {
               >
                 Actualizar Usuario
               </button>
+              
+              
             )}
           </form>
+          <button
+              type="button"
+              onClick={() => setIsFormVisible(false)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded"
+            >
+              Cancelar
+            </button>
         </VDialog>
       )}
-      {/* <Modals
-        isOpen={isDeleteModalOpen}
-        title="Confirmar Eliminación"
-        message={`¿Estás seguro de que deseas eliminar al registro?`}
-        onConfirm={handleDeleteConfirmation}
-        onCancel={closeDeleteModal}
-        showUpdateButton={false}
-        showConfirmButton={true}
-      /> */}
 
 {isDeleteModalOpen && (
+            <VDialog
+            isOpen={isDeleteModalOpen}
+            size="sm"
+            className="-translate-x-1/2 bg-black bg-opacity-25"
+          >
         <div className="bg-white p-4 border rounded">
           <p className="text-lg font-bold mb-4">
             ¿Estás seguro de que deseas eliminar al registro?
@@ -300,7 +305,10 @@ const Page = () => {
             </button>
           </div>
         </div>
+        </VDialog>
       )}
+      
+    
 
       <SuccessModal
         isOpen={isDeleteSuccess}
