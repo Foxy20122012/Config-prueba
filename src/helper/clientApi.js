@@ -1,12 +1,12 @@
 import getConfig from 'next/config';
 import forge from 'node-forge';
 
-const { publicRuntimeConfig } = getConfig();
+// const { publicRuntimeConfig } = getConfig();
 
 const constants = {
   urlWebApi: process.env.NEXT_PUBLIC_urlWebApi,
   urlUploadApi: process.env.NEXT_PUBLIC_urlUploadApi,
-  publicKey: process.env.NEXT_PUBLIC_publicKey
+  publicKey: process.env.NEXT_PUBLIC_publicKey,
 };
 
 const uris = {
@@ -40,7 +40,7 @@ const callWs = async (uri, json) => {
     }
 
     const result = await response.json();
-    return result.data; // return data rows
+    return result.data[0]; // return data rows
   } catch (error) {
     console.error('Error en la llamada a la API:', error);
     throw error;
