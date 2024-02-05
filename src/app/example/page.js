@@ -198,53 +198,43 @@ const Page = () => {
         onDeleteItem={handleDelete} // Iniciar el proceso de eliminación al hacer clic en "Eliminar"
       />
 
-      {isFormVisible && isFormVisible === true && (
-        <VDialog
-          isOpen={isFormVisible}
-          size="sm"
-          className="-translate-x-1/2 bg-black bg-opacity-25"
-        >
-          {/* Formulario */}
-          <form className="mb-4">
+
+{isFormVisible && isFormVisible === true && (
+            <VDialog
+            isOpen={isFormVisible}
+            size="sm"
+            className="-translate-x-1/2 bg-black bg-opacity-25"
+          >
+        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+          <form className="grid grid-cols-1" onSubmit={(e) => e.preventDefault()}>
             <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="nombre"
-              >
-                Nombre:
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
+                Nombre:<span className="text-red-600">(*)</span>
               </label>
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
                 value={formData.nombre}
-                onChange={(e) =>
-                  setFormData({ ...formData, nombre: e.target.value })
-                }
-                className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
 
             <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="email"
-              >
-                Email:
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                Email: <span className="text-red-600">(*)</span>
               </label>
               <input
                 type="text"
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
 
-            {/* Botones para insertar o actualizar */}
             {!selectedUser ? (
               <button
                 type="button"
@@ -261,17 +251,17 @@ const Page = () => {
               >
                 Actualizar Usuario
               </button>
-              
-              
             )}
           </form>
+
           <button
-              type="button"
-              onClick={() => setIsFormVisible(false)}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded"
-            >
-              Cancelar
-            </button>
+            type="button"
+            onClick={() => setIsFormVisible(false)}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded mt-4"
+          >
+            Cancelar
+          </button>
+        </div>
         </VDialog>
       )}
 
