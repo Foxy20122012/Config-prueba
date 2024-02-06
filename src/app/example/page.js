@@ -25,6 +25,7 @@ const Page = () => {
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [emailError, setEmailError] = useState(null);
 
   const handleDeleteConfirmation = (user) => {
     setSelectedUser(user);
@@ -186,6 +187,7 @@ const Page = () => {
   return (
     <>
       <DataTable
+        className= "flex items-center"
         headers={headers}
         items={users}
         presets={presets}
@@ -311,7 +313,7 @@ const Page = () => {
         <h1 className="text-3xl font-bold mb-4">Lista de Usuarios</h1>
 
         {/* Lista de Usuarios */}
-        <ul>
+        {/* <ul>
           {Array.isArray(users) && users.length > 0 ? (
             users.map((user) => (
               <li key={user.id} className="mb-4 border p-4 rounded">
@@ -321,7 +323,7 @@ const Page = () => {
                     <p className="text-gray-700">{user.email}</p>
                   </div>
                   <div>
-                    {/* Botones para editar y eliminar */}
+                    
                     <button
                       type="button"
                       onClick={() => {
@@ -349,7 +351,7 @@ const Page = () => {
           ) : (
             <li>No hay usuarios disponibles</li>
           )}
-        </ul>
+        </ul> */}
       </div>
     </>
   );
