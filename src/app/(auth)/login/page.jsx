@@ -1,40 +1,41 @@
-'use client';
-
-// import environment from '@/utils/environment'
+'use client'
+import { useState } from 'react';
 import presets from '../../../utils/globalPresets';
-import { EyeSlashIcon, EyeIcon, KeyIcon } from '@heroicons/react/20/solid';
-import { UserIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import React from 'react';
+import { EyeIcon, EyeSlashIcon, KeyIcon, UserIcon } from '@heroicons/react/20/solid';
 import { useForm } from 'react-hook-form';
-// import { signIn } from 'next-auth/react';
 
 const RegisterForm = () => {
-  const [passwordShown, setPasswordShown] = React.useState(false);
-
+  const [passwordShown, setPasswordShown] = useState(false);
   const { register, handleSubmit, formState: { errors, isValid } } = useForm({
     mode: 'onChange'
   });
 
-  // async function hashPassword (password) {
-  //   const encoder = new TextEncoder()
-  //   const data = encoder.encode(password)
-  //   const hash = await window.crypto.subtle.digest('SHA-256', data)
-  //   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
-  // }
-
   const onSubmit = async (data) => {
-    // data.password = await hashPassword(data.password)
-    const result = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false
-    });
+    try {
+      const response = await fetch('https://bufeteapi.azurewebsites.net/api/login/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          correo: data.email,
+          contraseña: data.password
+        })
+      });
 
-    if (result.error) {
-      console.error('Error de inicio de sesión:', result.error);
-    } else {
-      window.location.href = '/'; // Redirige al usuario a la ruta raíz después del inicio de sesión exitoso
+      if (response.ok) {
+        const { token } = await response.json();
+        // Guardar el token en el almacenamiento local o en una cookie
+        localStorage.setItem('token', token);
+        window.location.href = '/'; // Redirigir al usuario a la página principal después del inicio de sesión exitoso
+      } else {
+        console.error('Error de inicio de sesión:', response.statusText);
+        // Manejar el error de inicio de sesión si es necesario
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Manejar errores de red u otros errores si es necesario
     }
   };
 
@@ -42,7 +43,6 @@ const RegisterForm = () => {
     <>
       <div className={'flex flex-wrap w-screen h-screen overflow-x-hidden bg-gray-200'}>
         <div className={'flex flex-shrink w-full h-full  md:w-1/2 lg:w-1/3 bg-white'}>
-          {/* <!-- Tarjeta de Login --> */}
           <div className={'rounded-lg w-full border-[#E9ECEF] border'}>
             <div className={'flex w-full p-4 justify-center overflow-hidden'}>
               <div className={'h-64 w-64 flex justify-center items-center shrink-0'}>
@@ -57,66 +57,62 @@ const RegisterForm = () => {
             </div>
             <div className="align-center flex w-full px-8 py-4">
               <div className={'flex w-full flex-col space-y-4'}>
-                {/* <!-- Formulario --> */}
                 <div className="flex w-full flex-col space-y-4">
-                  <>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-600 select-none">
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-600 select-none">
                         Usuario
-                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
-                        </label>
-                        <div className='relative flex h-9 justify-between'>
-                          <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            {...register('email', { required: true })}
-                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
-                            placeholder="example@email.com"
-                          />
-                          <div className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'>
-                            <UserIcon className='h-5 w-5' />
-                          </div>
+                        <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                      </label>
+                      <div className='relative flex h-9 justify-between'>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          {...register('email', { required: true })}
+                          className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                          placeholder="example@email.com"
+                        />
+                        <div className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'>
+                          <UserIcon className='h-5 w-5' />
                         </div>
-                        {errors.email && <p className="text-red-500 text-xs mt-1">El campo Usuario es requerido.</p>}
                       </div>
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-600 select-none">
+                      {errors.email && <p className="text-red-500 text-xs mt-1">El campo Usuario es requerido.</p>}
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-600 select-none">
                         Clave
-                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
-                        </label>
-                        <div className='relative flex h-9 justify-between'>
-                          <input
-                            type={passwordShown ? 'text' : 'password'}
-                            id="password"
-                            name="password"
-                            {...register('password', { required: true })}
-                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
-                          />
-                          <div
-                            className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'
-                            onClick={() => { setPasswordShown(!passwordShown) }}
-                          >
-                            {!passwordShown ? <EyeSlashIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
-                          </div>
-                        </div>
-                        {errors.password && <p className="text-red-500 text-xs mt-1">El campo Clave es requerido.</p>}
-                      </div>
-                      <div className="mb-4">
-                        <button
-                          type="submit"
-                          className={`inline-flex w-full justify-center items-center h-9 px-2 m-1 text-white ease-linear transition-colors duration-150 rounded-md border ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 cursor-not-allowed'}`}
-                          disabled={!isValid}
+                        <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                      </label>
+                      <div className='relative flex h-9 justify-between'>
+                        <input
+                          type={passwordShown ? 'text' : 'password'}
+                          id="password"
+                          name="password"
+                          {...register('password', { required: true })}
+                          className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                        />
+                        <div
+                          className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'
+                          onClick={() => { setPasswordShown(!passwordShown) }}
                         >
-                          <KeyIcon className="h-5 w-5 pr-2" />
-                          Iniciar Sesión
-                        </button>
+                          {!passwordShown ? <EyeSlashIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                        </div>
                       </div>
-                    </form>
-                  </>
+                      {errors.password && <p className="text-red-500 text-xs mt-1">El campo Clave es requerido.</p>}
+                    </div>
+                    <div className="mb-4">
+                      <button
+                        type="submit"
+                        className={`inline-flex w-full justify-center items-center h-9 px-2 m-1 text-white ease-linear transition-colors duration-150 rounded-md border ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 cursor-not-allowed'}`}
+                        disabled={!isValid}
+                      >
+                        <KeyIcon className="h-5 w-5 pr-2" />
+                        Iniciar Sesión
+                      </button>
+                    </div>
+                  </form>
                 </div>
-                {/* <!-- Fin Formulario --> */}
               </div>
             </div>
           </div>
