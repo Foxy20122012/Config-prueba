@@ -1,7 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import dynamic from "next/dynamic";
 import presets from "@/utils/globalPresets";
+import useI18n from '@/hooks/useI18n'
+// import mensajes from '@/utils/i18n.';
+
+// import { I18nContext } from '@/plugins/i18nContext';
+
 import clientesModels from "../../models/clientesModels";
 
 import SuccessModal from "../../components/SuccessModal";
@@ -16,7 +21,35 @@ const VDialog = dynamic(
   { ssr: false }
 );
 
+
 const ClientesPage = () => {
+
+  const mensajes = [
+    {
+      LENGUAJE: 'en',
+      ID_MENSAJE: 'newItem',
+      MENSAJE: 'New',
+      ID_MENSAJE_PADRE: 'common'
+    },
+    {
+      LENGUAJE: 'en',
+      ID_MENSAJE: 'save',
+      MENSAJE: 'Save',
+      ID_MENSAJE_PADRE: 'common'
+    },
+    {
+      LENGUAJE: 'es',
+      ID_MENSAJE: 'newItem',
+      MENSAJE: 'Nuevo',
+      ID_MENSAJE_PADRE: 'common'
+    },
+    {
+      LENGUAJE: 'es',
+      ID_MENSAJE: 'save',
+      MENSAJE: 'Guardar',
+      ID_MENSAJE_PADRE: 'common'
+    }
+  ];
   const [headers, setHeaders] = useState([]); // Define tus cabeceras aquí
   const [items, setItems] = useState([]); // Define tus elementos aquí
   const [users, setUsers] = useState([]);
@@ -26,14 +59,42 @@ const ClientesPage = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const obtenerFechaActual = () => {
+  const i18n = useI18n()
+
+  const obtenerFechaHace18Anios = () => {
     const hoy = new Date();
-    const dia = hoy.getDate().toString().padStart(2, "0");
-    const mes = (hoy.getMonth() + 1).toString().padStart(2, "0");
-    const anio = hoy.getFullYear();
-    return `${anio}-${mes}-${dia}`;
+    hoy.setFullYear(hoy.getFullYear() - 18);
+    return hoy.toISOString().split("T")[0]; // Formato YYYY-MM-DD
   };
-  
+
+  const obtenerFechaHace100Anios = () => {
+    const hoy = new Date();
+    hoy.setFullYear(hoy.getFullYear() - 100);
+    return hoy.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+  };
+
+  const handleFechaNacimientoChange = (e) => {
+    const fechaNacimiento = e.target.value;
+    const fechaHace18Anios = obtenerFechaHace18Anios();
+    const fechaHace100Anios = obtenerFechaHace100Anios();
+
+    if (
+      fechaNacimiento > fechaHace18Anios ||
+      fechaNacimiento < fechaHace100Anios
+    ) {
+      setFormData({
+        ...formData,
+        fecha_nacimiento: fechaNacimiento,
+        fueraDeRango: true,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        fecha_nacimiento: fechaNacimiento,
+        fueraDeRango: false,
+      });
+    }
+  };
 
   const handleDeleteConfirmation = (user) => {
     setSelectedUser(user);
@@ -213,10 +274,17 @@ const ClientesPage = () => {
 
   return (
     <>
+    
       <DataTable
         className="flex items-center"
         headers={headers}
         items={users}
+        i18n={{
+          common: {
+            newItem: 'Nuevo', // Define el texto directamente aquí
+            save: 'Guardar', // Define el texto directamente aquí
+          },
+        }}
         presets={presets}
         onNewItem={() => setIsFormVisible(true)} // Abrir formulario al hacer clic en "Nuevo"
         onEditItem={(item) => {
@@ -277,29 +345,31 @@ const ClientesPage = () => {
               </div>
 
               <div className="mb-4 mx-1">
-  <label
-    className="block text-gray-700 text-sm font-bold mb-2"
-    htmlFor="correo"
-  >
-    Correo: <span className="text-red-600">(*)</span>
-  </label>
-  <input
-    type="email"
-    id="correo"
-    name="correo"
-    value={formData.correo}
-    onChange={(e) => {
-      // Expresión regular para validar el formato de correo electrónico
-      const emailRegex = /^[^\s@]/;
-      if (emailRegex.test(e.target.value) || e.target.value === "") {
-        setFormData({ ...formData, correo: e.target.value });
-      }
-    }}
-    className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    placeholder="Ingrese su correo electrónico"
-  />
-</div>
-
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="correo"
+                >
+                  Correo: <span className="text-red-600">(*)</span>
+                </label>
+                <input
+                  type="email"
+                  id="correo"
+                  name="correo"
+                  value={formData.correo}
+                  onChange={(e) => {
+                    // Expresión regular para validar el formato de correo electrónico
+                    const emailRegex = /^[^\s@]/;
+                    if (
+                      emailRegex.test(e.target.value) ||
+                      e.target.value === ""
+                    ) {
+                      setFormData({ ...formData, correo: e.target.value });
+                    }
+                  }}
+                  className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Ingrese su correo electrónico"
+                />
+              </div>
 
               <div className="mb-4 mx-1">
                 <label
@@ -420,13 +490,18 @@ const ClientesPage = () => {
         id="fecha_nacimiento"
         name="fecha_nacimiento"
         value={formData.fecha_nacimiento}
-        onChange={(e) =>
-          setFormData({ ...formData, fecha_nacimiento: e.target.value })
-        }
+        onChange={handleFechaNacimientoChange}
         required={true}
-        max={obtenerFechaActual()} // Establece la fecha máxima como la fecha actual
+        min={obtenerFechaHace100Anios()} // Establece la fecha mínima hace 100 años
+        max={obtenerFechaHace18Anios()} // Establece la fecha máxima hace 18 años
         className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
+
+      {formData.fueraDeRango && (
+        <p className="text-red-600">
+          La fecha debe estar entre hace 100 años y hace 18 años.
+        </p>
+      )}
     </div>
 
               <div className="mb-4 mx-1">
@@ -434,7 +509,7 @@ const ClientesPage = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="notas"
                 >
-                 Notas : <span className="text-red-600">(*)</span>
+                  Notas : <span className="text-red-600">(*)</span>
                 </label>
                 <input
                   type="text"
@@ -455,7 +530,7 @@ const ClientesPage = () => {
                   onClick={insertUser}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 flex justify-center rounded focus:outline-none focus:shadow-outline "
                 >
-                  Insertar Usuario
+                  Insertar Cliente
                 </button>
               ) : (
                 <button
@@ -463,7 +538,7 @@ const ClientesPage = () => {
                   onClick={updateUser}
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
-                  Actualizar Usuario
+                  Actualizar Cliente
                 </button>
               )}
             </form>
