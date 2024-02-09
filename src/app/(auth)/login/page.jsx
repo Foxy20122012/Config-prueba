@@ -4,14 +4,19 @@ import presets from '../../../utils/globalPresets';
 import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon, KeyIcon, UserIcon } from '@heroicons/react/20/solid';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaUserGroup } from "react-icons/fa6";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 
 const RegisterForm = () => {
   const [passwordShown, setPasswordShown] = useState(false);
+  const [showAdminLoginForm, setShowAdminLoginForm] = useState(true); // Mostrar el formulario de administrador por defecto
   const { register, handleSubmit, formState: { errors, isValid } } = useForm({
     mode: 'onChange'
   });
 
-  const onSubmit = async (data) => {
+  const onSubmitAdmin = async (data) => {
     try {
       const response = await fetch('https://bufeteapi.azurewebsites.net/api/login/admin', {
         method: 'POST',
@@ -26,17 +31,53 @@ const RegisterForm = () => {
 
       if (response.ok) {
         const { token } = await response.json();
-        // Guardar el token en el almacenamiento local o en una cookie
         localStorage.setItem('token', token);
-        window.location.href = '/'; // Redirigir al usuario a la página principal después del inicio de sesión exitoso
+        toast.success('¡Bienvenido, administrador!');
+        window.location.href = '/'; 
       } else {
         console.error('Error de inicio de sesión:', response.statusText);
-        // Manejar el error de inicio de sesión si es necesario
+        toast.error('Credenciales incorrectas');
       }
     } catch (error) {
       console.error('Error:', error);
-      // Manejar errores de red u otros errores si es necesario
+      toast.error('Error de red');
     }
+  };
+
+  const onSubmitUsers = async (data) => {
+    try {
+      const response = await fetch('https://bufeteapi.azurewebsites.net/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          correo: data.email,
+          contraseña: data.password
+        })
+      });
+
+      if (response.ok) {
+        const { token } = await response.json();
+        localStorage.setItem('token', token);
+        toast.success('¡Bienvenido, usuario!');
+        window.location.href = '/userraiz'; 
+      } else {
+        console.error('Error de inicio de sesión:', response.statusText);
+        toast.error('Credenciales incorrectas');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error de red');
+    }
+  };
+
+  const handleAdminLoginFormClick = () => {
+    setShowAdminLoginForm(true);
+  };
+
+  const handleUsersLoginFormClick = () => {
+    setShowAdminLoginForm(false);
   };
 
   return (
@@ -58,60 +99,133 @@ const RegisterForm = () => {
             <div className="align-center flex w-full px-8 py-4">
               <div className={'flex w-full flex-col space-y-4'}>
                 <div className="flex w-full flex-col space-y-4">
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-600 select-none">
-                        Usuario
-                        <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
-                      </label>
-                      <div className='relative flex h-9 justify-between'>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          {...register('email', { required: true })}
-                          className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
-                          placeholder="example@email.com"
-                        />
-                        <div className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'>
-                          <UserIcon className='h-5 w-5' />
+                  <div className="mb-4 flex justify-between">
+                    <button
+                      className={`inline-flex items-center justify-center px-10  text-sm font-medium text-white ${showAdminLoginForm ? 'bg-blue-500' : 'bg-gray-300'} border border-transparent rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                      onClick={handleAdminLoginFormClick}
+                    >
+                      <MdOutlineAdminPanelSettings className='h-10 w-10 pr-4' />
+                      Entidad. 
+                    </button>
+                    <button
+                      className={`inline-flex items-center justify-center px-14 text-sm font-medium text-white ${showAdminLoginForm ? 'bg-gray-300' : 'bg-blue-500'} border border-transparent rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                      onClick={handleUsersLoginFormClick}
+                    >
+                      <FaUserGroup className='h-8 w-8 pr-4' />
+                      Usuarios.
+                    </button>
+                  </div>
+                  {(showAdminLoginForm && (
+                    <form onSubmit={handleSubmit(onSubmitAdmin)}>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-600 select-none">
+                          Usuario
+                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                        </label>
+                        <div className='relative flex h-9 justify-between'>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            {...register('email', { required: true })}
+                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                            placeholder="example@email.com"
+                          />
+                          <div className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'>
+                            <UserIcon className='h-5 w-5' />
+                          </div>
                         </div>
+                        {errors.email && <p className="text-red-500 text-xs mt-1">El campo Usuario es requerido.</p>}
                       </div>
-                      {errors.email && <p className="text-red-500 text-xs mt-1">El campo Usuario es requerido.</p>}
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-600 select-none">
-                        Clave
-                        <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
-                      </label>
-                      <div className='relative flex h-9 justify-between'>
-                        <input
-                          type={passwordShown ? 'text' : 'password'}
-                          id="password"
-                          name="password"
-                          {...register('password', { required: true })}
-                          className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
-                        />
-                        <div
-                          className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'
-                          onClick={() => { setPasswordShown(!passwordShown) }}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-600 select-none">
+                          Clave
+                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                        </label>
+                        <div className='relative flex h-9 justify-between'>
+                          <input
+                            type={passwordShown ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            {...register('password', { required: true })}
+                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                          />
+                          <div
+                            className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'
+                            onClick={() => { setPasswordShown(!passwordShown) }}
+                          >
+                            {!passwordShown ? <EyeSlashIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                          </div>
+                        </div>
+                        {errors.password && <p className="text-red-500 text-xs mt-1">El campo Clave es requerido.</p>}
+                      </div>
+                      <div className="mb-4">
+                        <button
+                          type="submit"
+                          className={`inline-flex w-full justify-center items-center h-9 px-2 m-1 text-white ease-linear transition-colors duration-150 rounded-md border ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 cursor-not-allowed'}`}
+                          disabled={!isValid}
                         >
-                          {!passwordShown ? <EyeSlashIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
-                        </div>
+                          <KeyIcon className="h-5 w-5 pr-2" />
+                          Iniciar Sesión
+                        </button>
                       </div>
-                      {errors.password && <p className="text-red-500 text-xs mt-1">El campo Clave es requerido.</p>}
-                    </div>
-                    <div className="mb-4">
-                      <button
-                        type="submit"
-                        className={`inline-flex w-full justify-center items-center h-9 px-2 m-1 text-white ease-linear transition-colors duration-150 rounded-md border ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 cursor-not-allowed'}`}
-                        disabled={!isValid}
-                      >
-                        <KeyIcon className="h-5 w-5 pr-2" />
-                        Iniciar Sesión
-                      </button>
-                    </div>
-                  </form>
+                    </form>
+                  )) || (
+                    <form onSubmit={handleSubmit(onSubmitUsers)}>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-600 select-none">
+                          Usuario
+                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                        </label>
+                        <div className='relative flex h-9 justify-between'>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            {...register('email', { required: true })}
+                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                            placeholder="example@email.com"
+                          />
+                          <div className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'>
+                            <UserIcon className='h-5 w-5' />
+                          </div>
+                        </div>
+                        {errors.email && <p className="text-red-500 text-xs mt-1">El campo Usuario es requerido.</p>}
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-600 select-none">
+                          Clave
+                          <div className='inline-flex text-sm font-medium text-red-400'> (*)</div>
+                        </label>
+                        <div className='relative flex h-9 justify-between'>
+                          <input
+                            type={passwordShown ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            {...register('password', { required: true })}
+                            className="w-full p-2 border-y border-l focus:border-gray-400 outline-none rounded-l-lg focus:border-r-none"
+                          />
+                          <div
+                            className='bg-theme-app-500 hover:bg-theme-app-600 text-white flex justify-center items-center p-2 rounded-r-lg cursor-pointer'
+                            onClick={() => { setPasswordShown(!passwordShown) }}
+                          >
+                            {!passwordShown ? <EyeSlashIcon className='h-5 w-5' /> : <EyeIcon className='h-5 w-5' />}
+                          </div>
+                        </div>
+                        {errors.password && <p className="text-red-500 text-xs mt-1">El campo Clave es requerido.</p>}
+                      </div>
+                      <div className="mb-4">
+                        <button
+                          type="submit"
+                          className={`inline-flex w-full justify-center items-center h-9 px-2 m-1 text-white ease-linear transition-colors duration-150 rounded-md border ${isValid ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 cursor-not-allowed'}`}
+                          disabled={!isValid}
+                        >
+                          <KeyIcon className="h-5 w-5 pr-2" />
+                          Iniciar Sesión
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               </div>
             </div>

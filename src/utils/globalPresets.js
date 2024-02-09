@@ -6,7 +6,8 @@ const presets = {
   images: {
     logo: 'https://cvecabogados.com/wp-content/uploads/2022/10/Estudio-de-abogados-en-Quito-Ecuador-1-2.jpg',
     loginFondo: 'https://recursosparapymes.com/wp-content/uploads/2022/06/mejores-herramientas-planificacion-gratuitas.jpg',
-    welcomeFondo: 'https://cvecabogados.com/wp-content/uploads/2022/10/Estudio-de-abogados-en-Quito-Ecuador-1-2.jpg'
+    welcomeFondo: 'https://cvecabogados.com/wp-content/uploads/2022/10/Estudio-de-abogados-en-Quito-Ecuador-1-2.jpg',
+    icon: 'https://cvecabogados.com/wp-content/uploads/2022/10/Estudio-de-abogados-en-Quito-Ecuador-1-2.jpg',
   },
   locations: {
     login: '/login',
