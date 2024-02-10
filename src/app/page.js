@@ -1,66 +1,57 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar"; // Ajusta la ruta según la ubicación real de tu componente Sidebar
-import presets from "../utils/globalPresets";
-
+'use client'
+import React, { useState, useEffect } from 'react';
 
 const Page = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [procesos, setProcesos] = useState([]);
+    const [error, setError] = useState(null);
 
-  const userObj = {
-    compania: 'Company Name',
-    nombre_usuario: 'John Doe',
-    email: 'john@example.com'
-  };
+    useEffect(() => {
+        const obtenerProcesos = async () => {
+            try {
+                // Hacer la solicitud GET a la API para obtener los procesos del usuario
+                const response = await fetch('https://bufeteapi.azurewebsites.net/api/procesos', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Incluir el token JWT almacenado en localStorage
+                    }
+                });
+                
+                // Verificar si la solicitud fue exitosa
+                if (response.ok) {
+                    // Convertir la respuesta a formato JSON
+                    const data = await response.json();
+                    // Establecer los procesos en el estado
+                    setProcesos(data);
+                } else {
+                    // Si hay un error en la solicitud, lanzar un error
+                    throw new Error('Error al obtener los procesos del usuario');
+                }
+            } catch (error) {
+                // Capturar y manejar errores
+                console.error('Error:', error);
+                setError(error.message);
+            }
+        };
 
-  const menu = [
-    {
-      id_menu: 1,
-      title: "Opción 1",
-      icon: "SomeIconComponent",
-      path: "/opcion-1",
-      children: [
-        {
-          id_menu: 2,
-          title: "Subopción 1.1",
-          icon: "SomeIconComponent",
-          path: "/opcion-1/subopcion-1-1",
-        },
-      ],
-    },
-  ];
+        // Llamar a la función para obtener los procesos del usuario cuando el componente se monte
+        obtenerProcesos();
+    }, []);
 
-  const handleLogout = () => {
-    // Lógica para cerrar sesión
-  };
-
-  
-
-  useEffect(() => {
-    document.title = "Página principal";
-  }, []);
-
-  return (
-    <div className="flex h-screen overflow-hidden bg-gray-100">
-      
-      <Sidebar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        presets={presets}
-        menu={menu}
-        userObj={userObj}
-        onClickLogout={handleLogout}
-        sidebarStyles={"via-bg-sidebar"}
-        optionStyles={"text-base font-normal via-options-sidebar"}
-        suboptionStyles={"text-sm font-normal via-suboptions-sidebar"}
-      />
-
-      <div className="flex flex-col flex-1">
-        <header className="w-full h-16 bg-gray-200"></header>
-        <main className="flex-1 p-4"></main>
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <h1>Procesos del Usuario</h1>
+            {error && <p>Error: {error}</p>}
+            <ul>
+                {procesos.map(proceso => (
+                    <li key={proceso.id}>
+                        <p>Nombre del Proceso: {proceso.nombre_proceso}</p>
+                        <p>Descripción: {proceso.descripcion}</p>
+                        {/* Mostrar más detalles del proceso si es necesario */}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default Page;
