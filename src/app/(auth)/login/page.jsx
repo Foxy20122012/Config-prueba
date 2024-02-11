@@ -33,7 +33,7 @@ const RegisterForm = () => {
         const { token } = await response.json();
         localStorage.setItem('token', token);
         toast.success('¡Bienvenido, administrador!');
-        window.location.href = '/'; 
+        window.location.href = '/userraiz'; 
       } else {
         console.error('Error de inicio de sesión:', response.statusText);
         toast.error('Credenciales incorrectas');
@@ -61,7 +61,7 @@ const RegisterForm = () => {
         const { token } = await response.json();
         localStorage.setItem('token', token);
         toast.success('¡Bienvenido, usuario!');
-        window.location.href = '/userraiz'; 
+        window.location.href = '/'; 
       } else {
         console.error('Error de inicio de sesión:', response.statusText);
         toast.error('Credenciales incorrectas');
